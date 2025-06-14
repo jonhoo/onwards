@@ -22,7 +22,7 @@ variable "tfc_aws_dynamic_credentials" {
 }
 
 variable "aws_region" {
-  type = "string"
+  type = string
   description = "AWS region to deploy into"
 }
 

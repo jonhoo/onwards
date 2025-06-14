@@ -1,5 +1,5 @@
 variable "domain" {
-  type = "string"
+  type = string
   description = "Domain to deploy to"
 }
 
