@@ -1,5 +1,6 @@
 variable "domain" {
   type = "string"
+  description = "Domain to deploy to"
 }
 
 resource "aws_route53_zone" "onwards" {

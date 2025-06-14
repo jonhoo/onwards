@@ -21,8 +21,13 @@ variable "tfc_aws_dynamic_credentials" {
   })
 }
 
+variable "aws_region" {
+  type = "string"
+  description = "AWS region to deploy into"
+}
+
 provider "aws" {
-  region              = "eu-north-1"
+  region              = var.aws_region
   shared_config_files = [var.tfc_aws_dynamic_credentials.default.shared_config_file]
   # assume_role {
   #   role_arn    = "arn:aws:iam::880545379339:role/OrganizationAccountAccessRole"
