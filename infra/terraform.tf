@@ -126,7 +126,6 @@ data "aws_iam_policy_document" "tfc_plan_policy" {
       "cloudfront:ListFunctions",
       "cloudfront:ListOriginAccessControls",
       "cloudwatch:ListDashboards",
-      "glue:GetDatabases",
       "logs:ListTagsLogGroup",
       "s3:ListAllMyBuckets",
       "sts:GetCallerIdentity",
@@ -174,21 +173,6 @@ data "aws_iam_policy_document" "tfc_plan_policy" {
     resources = [aws_cloudwatch_dashboard.onwards.dashboard_arn]
   }
   statement {
-    actions = ["glue:GetDatabase", "glue:GetTags"]
-    resources = [
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
-      aws_glue_catalog_database.default.arn
-    ]
-  }
-  statement {
-    actions = ["glue:GetTable"]
-    resources = [
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
-      aws_glue_catalog_database.default.arn,
-      aws_glue_catalog_table.cf_logs.arn
-    ]
-  }
-  statement {
     actions = ["route53:GetHostedZone", "route53:ListTagsForResource", "route53:ListResourceRecordSets"]
     resources = [
       aws_route53_zone.onwards.arn
@@ -220,11 +204,10 @@ data "aws_iam_policy_document" "tfc_apply_policy" {
 # Data source used to grab the project under which a workspace will be created.
 #
 # https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/data-sources/project
-# TODO: https://github.com/hashicorp/terraform-provider-tfe/issues/882#issuecomment-1664306823
-# data "tfe_project" "onwards" {
-#   name         = var.tfc_project_name
-#   organization = var.tfc_organization_name
-# }
+data "tfe_project" "onwards" {
+  name         = var.tfc_project_name
+  organization = var.tfc_organization_name
+}
 
 # Runs in this workspace will be automatically authenticated
 # to AWS with the permissions set in the AWS policy.
@@ -233,9 +216,7 @@ data "aws_iam_policy_document" "tfc_apply_policy" {
 resource "tfe_workspace" "onwards" {
   name         = var.tfc_workspace_name
   organization = var.tfc_organization_name
-  # https://github.com/hashicorp/terraform-provider-tfe/issues/882#issuecomment-1664306823
-  # project_id   = data.tfe_project.onwards.id
-  project_id = "prj-WUc8qgSPdJY2D64L"
+  project_id   = data.tfe_project.onwards.id
 
   file_triggers_enabled = false
   queue_all_runs        = false
