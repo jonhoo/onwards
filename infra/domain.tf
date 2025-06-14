@@ -1,14 +1,14 @@
-locals {
-  domain = "r4r.fyi"
+variable "domain" {
+  type = "string"
 }
 
 resource "aws_route53_zone" "onwards" {
-  name = local.domain
+  name = var.domain
 }
 
 resource "aws_route53_record" "onwards_mx" {
   zone_id = aws_route53_zone.onwards.zone_id
-  name    = local.domain
+  name    = var.domain
   type    = "MX"
   ttl     = 3600
   records = [
@@ -19,7 +19,7 @@ resource "aws_route53_record" "onwards_mx" {
 
 resource "aws_route53_record" "onwards_spf" {
   zone_id = aws_route53_zone.onwards.zone_id
-  name    = local.domain
+  name    = var.domain
   type    = "TXT"
   ttl     = 3600
   records = [
@@ -29,7 +29,7 @@ resource "aws_route53_record" "onwards_spf" {
 
 resource "aws_route53_record" "onwards_cf" {
   zone_id = aws_route53_zone.onwards.zone_id
-  name    = local.domain
+  name    = var.domain
   type    = "A"
   alias {
     name                   = aws_cloudfront_distribution.onwards.domain_name
@@ -40,7 +40,7 @@ resource "aws_route53_record" "onwards_cf" {
 
 resource "aws_route53_record" "onwards_cf_v6" {
   zone_id = aws_route53_zone.onwards.zone_id
-  name    = local.domain
+  name    = var.domain
   type    = "AAAA"
   alias {
     name                   = aws_cloudfront_distribution.onwards.domain_name
@@ -51,7 +51,7 @@ resource "aws_route53_record" "onwards_cf_v6" {
 
 resource "aws_acm_certificate" "onwards" {
   provider          = aws.us-east-1
-  domain_name       = local.domain
+  domain_name       = var.domain
   validation_method = "DNS"
 
   lifecycle {
