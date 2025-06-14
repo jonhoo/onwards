@@ -14,21 +14,6 @@ concurrency:
   cancel-in-progress: true
 name: rolling
 jobs:
-  # https://twitter.com/mycoliza/status/1571295690063753218
-  nightly:
-    runs-on: ubuntu-latest
-    name: ubuntu / nightly
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Install nightly
-        uses: dtolnay/rust-toolchain@nightly
-      - name: cargo generate-lockfile
-        if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
-      - name: cargo test --locked
-        run: cargo test --locked --all-features --all-targets
   # https://twitter.com/alcuadrado/status/1571291687837732873
   update:
     # This action checks that updating the dependencies of this crate to the latest available that
