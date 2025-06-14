@@ -48,7 +48,7 @@ data "aws_canonical_user_id" "current" {}
 
 terraform {
   cloud {
-    organization = "rust4rustaceans"
+    organization = "rust-for-rustaceans"
     workspaces {
       name = "onwards"
     }
