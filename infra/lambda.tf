@@ -57,11 +57,11 @@ resource "aws_iam_role" "onwards" {
 // ```console
 // $ cargo lambda build --release --arm64
 // ```
-// The artifact will be located in <project_root>/server/target/lambda/lambda/bootstrap,
+// The artifact will be located in <project_root>/target/lambda/lambda/bootstrap,
 check "lambda-built" {
   assert {
-    condition     = fileexists("${path.module}/../server/target/lambda/lambda/bootstrap")
-    error_message = "Run `cargo lambda build --release --arm64` in ../server"
+    condition     = fileexists("${path.module}/../target/lambda/lambda/bootstrap")
+    error_message = "Run `cargo lambda build --release --arm64`"
   }
 }
 
