@@ -6,8 +6,14 @@ use http::StatusCode;
 use std::{collections::HashMap, sync::LazyLock};
 use tower_http::limit::RequestBodyLimitLayer;
 
-static FORWARDS: LazyLock<HashMap<&'static str, &'static str>> =
-    LazyLock::new(|| HashMap::from([("about", "https://github.com/jonhoo/onwards")]));
+static FORWARDS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
+    HashMap::from([
+        // This is where you add shortlinks!
+        //
+        // Note that "about" is special -- it is also where / will redirect.
+        ("about", "https://github.com/jonhoo/onwards"),
+    ])
+});
 
 pub async fn new() -> Router {
     Router::new()
