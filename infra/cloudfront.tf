@@ -57,6 +57,18 @@ resource "aws_cloudfront_distribution" "onwards" {
 
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = false
+
+      headers = [
+        "Origin",
+      ]
+
+      cookies {
+        forward = "none"
+      }
+    }
   }
 
   restrictions {
