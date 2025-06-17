@@ -67,7 +67,7 @@ check "lambda-built" {
 
 data "archive_file" "lambda" {
   type        = "zip"
-  source_file = "${path.module}/../server/target/lambda/lambda/bootstrap"
+  source_file = "${path.module}/../target/lambda/lambda/bootstrap"
   output_path = "lambda_function_payload.zip"
 }
 
