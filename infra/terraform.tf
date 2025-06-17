@@ -202,7 +202,6 @@ data "aws_iam_policy_document" "tfc_apply_policy" {
 resource "tfe_workspace" "onwards" {
   name         = var.tfc_workspace_name
   organization = var.tfc_organization_name
-  project_id   = var.tfc_project_name
 
   file_triggers_enabled = false
   queue_all_runs        = false
