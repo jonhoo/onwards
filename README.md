@@ -135,10 +135,10 @@ to touch this basically ever again.
    GitHub project. Congratulations -- setup is now done! Let's check
    that adding some links works.
 1. Open an MR against your fork of the repo where you edit `src/lib.rs`
-   to add additional short-links.
-1. TODO check "plan" job in MR
-1. Merge the MR
-1. TODO check "apply" job on `main`
+   to add additional short-links. Once CI passes, merge the MR.
+1. Open the CI for the `main` branch; there should be a job running
+   named "Terraform Cloud Apply Run / Terraform Apply". It should
+   succeed. When it does:
 1. Test your new short-link!
 
 [tf-aws]: https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/aws-configuration
