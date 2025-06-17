@@ -12,6 +12,7 @@ static FORWARDS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|
         //
         // Note that "about" is special -- it is also where / will redirect.
         ("about", "https://github.com/jonhoo/onwards"),
+        ("humans.txt", "https://thesquareplanet.com"),
     ])
 });
 
