@@ -25,7 +25,7 @@ variable "tfc_project_name" {
 
 variable "tfc_workspace_name" {
   type        = string
-  default     = "my-aws-workspace"
+  default     = "onwards"
   description = "The name of the workspace that you'd like to create and connect to AWS"
 }
 
@@ -160,12 +160,6 @@ data "aws_iam_policy_document" "tfc_plan_policy" {
     actions = ["cloudfront:GetCachePolicy", "cloudfront:GetCachePolicyConfig"]
     resources = [
       "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:cache-policy/${aws_cloudfront_cache_policy.cache_when_requested.id}"
-    ]
-  }
-  statement {
-    actions = ["cloudfront:DescribeFunction", "cloudfront:GetFunction"]
-    resources = [
-      aws_cloudfront_function.index_everywhere.arn
     ]
   }
   statement {

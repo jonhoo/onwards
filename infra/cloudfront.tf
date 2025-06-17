@@ -1,13 +1,5 @@
 locals {
-  s3_origin_id = "onwards"
   gw_origin_id = "onwards-api"
-}
-
-resource "aws_cloudfront_origin_access_control" "static" {
-  name                              = aws_s3_bucket.static.bucket_regional_domain_name
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
 }
 
 resource "aws_cloudfront_cache_policy" "cache_when_requested" {
@@ -30,12 +22,6 @@ resource "aws_cloudfront_cache_policy" "cache_when_requested" {
   }
 }
 
-resource "aws_cloudfront_function" "index_everywhere" {
-  name    = "index-everywhere"
-  runtime = "cloudfront-js-2.0"
-  code    = file("${path.module}/index-everywhere.js")
-}
-
 resource "aws_cloudfront_distribution" "onwards" {
   origin {
     origin_id = local.gw_origin_id
@@ -50,16 +36,9 @@ resource "aws_cloudfront_distribution" "onwards" {
     }
   }
 
-  origin {
-    origin_id                = local.s3_origin_id
-    domain_name              = aws_s3_bucket.static.bucket_regional_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.static.id
-  }
-
   enabled             = true
   is_ipv6_enabled     = true
-  default_root_object = "index.html"
-  aliases             = ["r4r.fyi"]
+  aliases             = [var.domain]
   price_class         = "PriceClass_All"
   http_version        = "http2"
 
@@ -71,35 +50,13 @@ resource "aws_cloudfront_distribution" "onwards" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = local.gw_origin_id
 
-    # Using the CachingOptimized managed policy ID:
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     # Using the SecurityHeadersPolicy managed policy ID:
     response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
 
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.index_everywhere.arn
-    }
-  }
-
-  # Cache behavior with precedence 0
-  ordered_cache_behavior {
-    path_pattern     = "/api/*"
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.gw_origin_id
-    compress         = true
-
-    cache_policy_id = aws_cloudfront_cache_policy.cache_when_requested.id
-    # Using the SecurityHeadersPolicy managed policy ID:
-    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
-
-    viewer_protocol_policy = "https-only"
   }
 
   restrictions {

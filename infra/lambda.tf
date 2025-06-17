@@ -25,24 +25,6 @@ data "aws_iam_policy_document" "cloudwatch" {
   }
 }
 
-data "aws_iam_policy_document" "dynamodb" {
-  statement {
-    actions = [
-      "dynamodb:UpdateItem",
-      "dynamodb:Scan",
-      "dynamodb:Query",
-      "dynamodb:PutItem",
-      "dynamodb:GetItem",
-      "dynamodb:BatchGetItem",
-    ]
-    resources = [
-      aws_dynamodb_table.events.arn,
-      aws_dynamodb_table.questions.arn,
-      "${aws_dynamodb_table.questions.arn}/index/top"
-    ]
-  }
-}
-
 data "aws_iam_policy_document" "assume_role" {
   statement {
     principals {
@@ -68,10 +50,6 @@ resource "aws_iam_role" "onwards" {
   inline_policy {
     name   = "cloudwatch"
     policy = data.aws_iam_policy_document.cloudwatch.json
-  }
-  inline_policy {
-    name   = "api-db-access"
-    policy = data.aws_iam_policy_document.dynamodb.json
   }
 }
 
