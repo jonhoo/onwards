@@ -57,7 +57,7 @@ jobs:
           tool: cargo-lambda@1
       - name: Install zig for cargo-lambda
         run: sudo snap install zig --classic --beta
-      - run: sam build -s ..
+      - run: sam build --beta-features -s ..
         working-directory: sam
       - run: sam local start-api &
         working-directory: sam
