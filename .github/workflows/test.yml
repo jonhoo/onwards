@@ -57,15 +57,23 @@ jobs:
           tool: cargo-lambda@1
       - name: Install zig for cargo-lambda
         run: sudo snap install zig --classic --beta
-      - run: sam build
+      - run: sam build -s ..
+        working-directory: sam
       - run: sam local start-api &
+        working-directory: sam
       - run: |
           set -euo pipefail
+          echo "curl"
           http=$(curl -v http://localhost:3000/)
+          echo "check for redirect"
           echo "$http" | grep -F "HTTP/1.1 308"
+          echo "check for redirect target"
           echo "$http" | grep -F "Location: https://rust-for-rustaceans.com"
       - run: |
           set -euo pipefail
+          echo "curl"
           http=$(curl -v http://localhost:3000/about)
+          echo "check for redirect"
           echo "$http" | grep -F "HTTP/1.1 308"
+          echo "check for redirect target"
           echo "$http" | grep -F "Location https://github.com/jonhoo/onwards"
