@@ -51,6 +51,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+      - name: cargo install cargo-lambda
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-lambda@1
+      - name: Install zig for cargo-lambda
+        run: sudo snap install zig --classic --beta
       - run: sam build
       - run: sam local start-api &
       - run: curl -v http://localhost:3000/
