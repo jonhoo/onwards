@@ -34,5 +34,3 @@ Resources:
       Environment:
         Variables:
           RUST_LOG: debug
-          USE_DYNAMODB: local
-          AWS_ENDPOINT_URL: http://dynamodb-local:8000

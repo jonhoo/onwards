@@ -40,3 +40,18 @@ jobs:
       # https://twitter.com/jonhoo/status/1571290371124260865
       - name: cargo test --locked
         run: cargo test --locked --all-features --all-targets
+  awslike:
+    runs-on: ubuntu-latest
+    name: As Lambda with SAM
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install ${{ matrix.toolchain }}
+        uses: dtolnay/rust-toolchain@stable
+      - run: sam build --use-container
+      - run: sam local start-api &
+      - run: curl -v http://localhost:3000/
+      - run: curl -v http://localhost:3000/about
