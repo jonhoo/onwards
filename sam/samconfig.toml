@@ -31,10 +31,6 @@ watch = true
 
 [default.local_start_api.parameters]
 warm_containers = "EAGER"
-# The command `sam local start-api` will be launch Lambda Runtime in a docker
-# container and so we need to make sure the DynamoDB Local is in the same network
-# (see `DYNAMODB_NETWORK_NAME` in `./run-dynamodb-local.sh`)
-docker_network = "onwards"
 
 [default.local_start_lambda.parameters]
 warm_containers = "EAGER"
