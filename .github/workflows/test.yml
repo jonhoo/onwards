@@ -61,7 +61,9 @@ jobs:
         working-directory: sam
       - run: sam local start-api &
         working-directory: sam
-      - run: |
+      - run: sleep 5
+      - name: curl -v http://localhost:3000/
+        run: |
           set -euo pipefail
           echo "curl"
           http=$(curl -v http://localhost:3000/)
@@ -69,7 +71,8 @@ jobs:
           echo "$http" | grep -F "HTTP/1.1 308"
           echo "check for redirect target"
           echo "$http" | grep -F "Location: https://rust-for-rustaceans.com"
-      - run: |
+      - name: curl -v http://localhost:3000/about
+        run: |
           set -euo pipefail
           echo "curl"
           http=$(curl -v http://localhost:3000/about)
