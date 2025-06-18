@@ -61,22 +61,16 @@ jobs:
         working-directory: sam
       - run: sam local start-api &
         working-directory: sam
-      - run: sleep 5
+      - run: sleep 3
       - name: curl -v http://localhost:3000/
         run: |
-          set -euo pipefail
-          echo "curl"
-          http=$(curl -v http://localhost:3000/)
-          echo "check for redirect"
-          echo "$http" | grep -F "HTTP/1.1 308"
-          echo "check for redirect target"
-          echo "$http" | grep -F "Location: https://rust-for-rustaceans.com"
+          set -euxo pipefail
+          http=$(curl -v http://localhost:3000/ 2>&1)
+          grep -F "HTTP/1.1 308" <<< "$http"
+          grep -F "Location: https://rust-for-rustaceans.com" <<< "$http"
       - name: curl -v http://localhost:3000/about
         run: |
-          set -euo pipefail
-          echo "curl"
-          http=$(curl -v http://localhost:3000/about)
-          echo "check for redirect"
-          echo "$http" | grep -F "HTTP/1.1 308"
-          echo "check for redirect target"
-          echo "$http" | grep -F "Location https://github.com/jonhoo/onwards"
+          set -euxo pipefail
+          http=$(curl -v http://localhost:3000/about 2>&1)
+          grep -F "HTTP/1.1 308" <<< "$http"
+          grep -F "Location https://github.com/jonhoo/onwards" <<< "$http"
