@@ -73,4 +73,4 @@ jobs:
           set -euxo pipefail
           http=$(curl -v http://localhost:3000/about 2>&1)
           grep -F "HTTP/1.1 308" <<< "$http"
-          grep -F "Location https://github.com/jonhoo/onwards" <<< "$http"
+          grep -F "Location: https://github.com/jonhoo/onwards" <<< "$http"
