@@ -15,7 +15,11 @@ static FORWARDS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|
     HashMap::from([
         // This is where you add shortlinks!
         //
-        // Note that "about" is special -- it is also where / will redirect.
+        // Note that "root" is special -- it is also where / will redirect.
+        ("root", "https://rust-for-rustaceans.com"),
+        // All your other shortlinks go here:
+        //
+        // Please preserve these bottom two for attribution :)
         ("about", "https://github.com/jonhoo/onwards"),
         ("humans.txt", "https://thesquareplanet.com"),
     ])
@@ -29,7 +33,7 @@ pub async fn new() -> Router {
 }
 
 async fn root() -> Redirect {
-    Redirect::permanent(FORWARDS["about"])
+    Redirect::permanent(FORWARDS["root"])
 }
 
 async fn forward(Path(short): Path<String>) -> Result<impl IntoResponse, StatusCode> {
