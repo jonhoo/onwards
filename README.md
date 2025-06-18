@@ -1,7 +1,43 @@
-To deploy:
+Onwards is my attempt at building a re-usable URL shortener for links
+that I'll put in my book, [Rust for Rustaceans][r4r]. I didn't want to
+pay a monthly fee to a URL shortener with support for custom domains,
+not because the additional data analytics they give you and such
+wouldn't be nice, but because $8+/month seemed excessive to agree to pay
+in perpetuity.
 
-There are a bunch of steps to set up, but once done, you shouldn't have
-to touch this basically ever again.
+So, onwards was born. It is hosted using an [AWS Lambda][lambda],
+meaning there is no always-on server cost. It keeps no access statistics
+and hard-codes the shortlinks in the binary, so there is no storage
+cost. It uses [AWS CloudFront][cf] for caching, so even if there are
+floods of traffic, the incurred cost is minimal.
+
+## How much does it cost?
+
+I haven't published the version of the book that has these links yet,
+but will update this with my final bill once I do. My expectation is
+about $1/month for the traffic, with half of that going to the fixed
+cost of Route 53, AWS' DNS provider. Then there's Terraform for managing
+the deployment when I push new changes and such, which will probably
+even out at about $2/month (which is really quite wild). Meaning in
+total I pay $3/month, with full control over the shortening (and no
+limits!).
+
+If anyone has ideas for reducing this cost further _without affecting
+the stable-state workflow_, I'd love to hear them.
+
+[r4r]: https://rust-for-rustaceans.com/
+[lambda]: https://aws.amazon.com/lambda/
+[cf]: https://aws.amazon.com/cloudfront/
+
+## How do I use it?
+
+It's a bit of a process to get the infrastructure set up, but once it's
+set up, changing the short links is one GitHub MR that you hit merge on.
+In other words, only really headache up front, and then you don't have
+to touch it. If anyone has ideas for removing steps from this _without
+affecting the stable-state workflow_, I'd love to hear them.
+
+Here's what you do:
 
 1. Fork this repo
 1. Sign up for [Terraform Cloud](https://app.terraform.io/public/signup/account)
