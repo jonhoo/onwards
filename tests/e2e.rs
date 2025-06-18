@@ -37,7 +37,7 @@ async fn root() {
     assert_eq!(r.status(), StatusCode::PERMANENT_REDIRECT);
     assert_eq!(
         r.headers().get(http::header::LOCATION).unwrap(),
-        "https://github.com/jonhoo/onwards"
+        "https://rust-for-rustaceans.com"
     );
 }
 
