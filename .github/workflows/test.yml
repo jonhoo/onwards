@@ -59,6 +59,8 @@ jobs:
         run: sudo snap install zig --classic --beta
       - run: sam build -s ..
         working-directory: sam
+        env:
+          SAM_BUILD_MODE: debug
       - run: sam local start-api &
         working-directory: sam
       - run: sleep 3
