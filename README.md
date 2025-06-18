@@ -175,6 +175,16 @@ Here's what you do:
 1. Open the CI for the `main` branch; there should be a job running
    named "Terraform Cloud Apply Run / Terraform Apply". It should
    succeed. When it does:
-1. Test your new short-link!
+1. Test your new short-link! The process for adding more links is the
+   same: push a commit that changes `src/lib.rs` — that's it. Even the
+   MR is optional.
+
+Now, if you do end up using this "for real", please let me know, because
+it makes me happy!
+
+Also, you may want to merge from this repo occasionally in case I've
+made improvements to the system. I don't anticipate adding any features
+really, though may improve the infrastructure setup (mainly to make it
+cheaper).
 
 [tf-aws]: https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/aws-configuration
