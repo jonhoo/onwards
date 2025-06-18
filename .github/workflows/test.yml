@@ -42,16 +42,16 @@ jobs:
         run: cargo test --locked --all-features --all-targets
   awslike:
     runs-on: ubuntu-latest
-    name: As Lambda with SAM
+    name: aws-sam
     steps:
       - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install ${{ matrix.toolchain }}
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-      - run: sam build --use-container
+      - run: sam build
       - run: sam local start-api &
       - run: curl -v http://localhost:3000/
       - run: curl -v http://localhost:3000/about
