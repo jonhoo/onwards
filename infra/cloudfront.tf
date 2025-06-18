@@ -52,9 +52,6 @@ resource "aws_cloudfront_distribution" "onwards" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = local.gw_origin_id
 
-    # Using the SecurityHeadersPolicy managed policy ID:
-    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
-
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 

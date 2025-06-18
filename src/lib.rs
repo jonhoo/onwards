@@ -1,8 +1,13 @@
 #[allow(unused_imports)]
 use tracing::{debug, error, info, trace, warn};
 
-use axum::{extract::Path, response::Redirect, routing::get, Router};
-use http::StatusCode;
+use axum::{
+    extract::Path,
+    response::{AppendHeaders, IntoResponse, Redirect},
+    routing::get,
+    Router,
+};
+use http::{header::CACHE_CONTROL, StatusCode};
 use std::{collections::HashMap, sync::LazyLock};
 use tower_http::limit::RequestBodyLimitLayer;
 
@@ -27,10 +32,13 @@ async fn root() -> Redirect {
     Redirect::permanent(FORWARDS["about"])
 }
 
-async fn forward(Path(short): Path<String>) -> Result<Redirect, StatusCode> {
+async fn forward(Path(short): Path<String>) -> Result<impl IntoResponse, StatusCode> {
     let Some(target) = FORWARDS.get(&*short) else {
         return Err(StatusCode::NOT_FOUND);
     };
 
-    Ok(Redirect::permanent(target))
+    Ok((
+        AppendHeaders([(CACHE_CONTROL, "max-age=86400, stale-if-error=31536000")]),
+        Redirect::permanent(target),
+    ))
 }
