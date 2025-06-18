@@ -59,5 +59,13 @@ jobs:
         run: sudo snap install zig --classic --beta
       - run: sam build
       - run: sam local start-api &
-      - run: curl -v http://localhost:3000/
-      - run: curl -v http://localhost:3000/about
+      - run: |
+          set -euo pipefail
+          http=$(curl -v http://localhost:3000/)
+          echo "$http" | grep -F "HTTP/1.1 308"
+          echo "$http" | grep -F "Location: https://rust-for-rustaceans.com"
+      - run: |
+          set -euo pipefail
+          http=$(curl -v http://localhost:3000/about)
+          echo "$http" | grep -F "HTTP/1.1 308"
+          echo "$http" | grep -F "Location https://github.com/jonhoo/onwards"
