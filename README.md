@@ -9,7 +9,8 @@ So, onwards was born. It is hosted using an [AWS Lambda][lambda],
 meaning there is no always-on server cost. It keeps no access statistics
 and hard-codes the shortlinks in the binary, so there is no storage
 cost. It uses [AWS CloudFront][cf] for caching, so even if there are
-floods of traffic, the incurred cost is minimal.
+floods of traffic, the incurred cost is minimal. And, because it's all
+stateless and serverless, it should scale to basically any user load.
 
 ## How much does it cost?
 
@@ -95,6 +96,21 @@ Here's what you do:
    - `TFC_AWS_PLAN_ROLE_ARN`: `arn:aws:iam::XYZ:role/tfc-apply-role`
      (yes, that's `apply` again; for now).
    - `TFC_AWS_PROVIDER_AUTH`: `true`
+1. Next, cd to `onwards/infra`, open `main.tf`, and edit the block that
+   looks like
+   ```terraform
+   terraform {
+       cloud {
+           # ..
+       }
+   }
+   ```
+   such that organization and (workspace) name match those of your
+   Terraform setup. Then, run:
+   ```console
+   terraform login
+   terraform init
+   ```
 1. Next, cd to `onwards` and run
    ```console
    terraform -chdir=infra apply
@@ -178,6 +194,11 @@ Here's what you do:
 1. Test your new short-link! The process for adding more links is the
    same: push a commit that changes `src/lib.rs` — that's it. Even the
    MR is optional.
+1. (optional) If you want email through your domain, it's already set up
+   to use https://improvmx.com/ out of the box, which is free for a
+   single domain! All you should need to do is make an account and input
+   your domain, and all should be green. If you want to do email through
+   another service, you'll have to modify `infra/domain.tf`.
 
 Now, if you do end up using this "for real", please let me know, because
 it makes me happy!

@@ -42,8 +42,13 @@ resource "aws_apigatewayv2_stage" "onwards" {
     })
   }
   default_route_settings {
+    # burst should be set to at most the number of shortlinks you have.
     throttling_burst_limit = 250
-    throttling_rate_limit  = 50
+    # rate limit should be set quite low -- it's the number of new (and
+    # uncached!) shortlinks that can be resolved per second. given that
+    # shortlinks are cached for 24h, it would be unreasonable for this to be
+    # much more than 10.
+    throttling_rate_limit  = 20
   }
 }
 

@@ -29,10 +29,6 @@ variable "aws_region" {
 provider "aws" {
   region              = var.aws_region
   shared_config_files = [var.tfc_aws_dynamic_credentials.default.shared_config_file]
-  # assume_role {
-  #   role_arn    = "arn:aws:iam::880545379339:role/OrganizationAccountAccessRole"
-  #   external_id = "terraform"
-  # }
 }
 
 # for ACM cert for CloudFront
@@ -41,10 +37,6 @@ provider "aws" {
   region              = "us-east-1"
   alias               = "us-east-1"
   shared_config_files = [var.tfc_aws_dynamic_credentials.default.shared_config_file]
-  # assume_role {
-  #   role_arn    = "arn:aws:iam::880545379339:role/OrganizationAccountAccessRole"
-  #   external_id = "terraform"
-  # }
 }
 
 data "aws_region" "current" {}
