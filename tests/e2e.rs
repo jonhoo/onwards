@@ -33,11 +33,13 @@ async fn root() {
         .redirect(redirect::Policy::none())
         .build()
         .unwrap();
-    let r = c.get(&app).send().await.unwrap();
-    assert_eq!(r.status(), StatusCode::PERMANENT_REDIRECT);
+    let implicit_root = c.get(&app).send().await.unwrap();
+    assert_eq!(implicit_root.status(), StatusCode::PERMANENT_REDIRECT);
+    let explicit_root = c.get(format!("{app}/root")).send().await.unwrap();
+    assert_eq!(explicit_root.status(), StatusCode::PERMANENT_REDIRECT);
     assert_eq!(
-        r.headers().get(http::header::LOCATION).unwrap(),
-        "https://rust-for-rustaceans.com"
+        implicit_root.headers().get(http::header::LOCATION).unwrap(),
+        explicit_root.headers().get(http::header::LOCATION).unwrap(),
     );
 }
 
