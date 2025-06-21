@@ -72,7 +72,7 @@ jobs:
           r1=$(grep -F "Location:" <<< "$http")
           http=$(curl -v http://localhost:3000/root 2>&1)
           grep -F "HTTP/1.1 308" <<< "$http"
-          r2=$(grep -F "Location:m" <<< "$http")
+          r2=$(grep -F "Location:" <<< "$http")
           test "$r1" -eq "$r2"
       - name: curl -v http://localhost:3000/about
         run: |
