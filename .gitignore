@@ -4,3 +4,4 @@
 dynamodb_local_latest.tar.gz*
 Makefile
 .aws-sam
+*.tfstate.backup
