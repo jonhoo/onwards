@@ -36,11 +36,11 @@ resource "aws_cloudfront_distribution" "onwards" {
     }
   }
 
-  enabled             = true
-  is_ipv6_enabled     = true
-  aliases             = [var.domain]
-  price_class         = "PriceClass_All"
-  http_version        = "http2"
+  enabled         = true
+  is_ipv6_enabled = true
+  aliases         = [var.domain]
+  price_class     = "PriceClass_All"
+  http_version    = "http2"
 
   logging_config {
     include_cookies = false

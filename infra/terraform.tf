@@ -64,13 +64,13 @@ resource "aws_iam_role" "tf_plan_role" {
 }
 
 resource "aws_iam_role_policy" "tf_plan_policy" {
-  name = "planning-permits"
-  role = aws_iam_role.tf_plan_role.id
+  name   = "planning-permits"
+  role   = aws_iam_role.tf_plan_role.id
   policy = data.aws_iam_policy_document.tf_plan_policy.json
 }
 
 resource "aws_iam_role_policies_exclusive" "tf_plan_role_policies" {
-  role_name = aws_iam_role.tf_plan_role.name
+  role_name    = aws_iam_role.tf_plan_role.name
   policy_names = [aws_iam_role_policy.tf_plan_policy.name]
 }
 
@@ -103,13 +103,13 @@ resource "aws_iam_role" "tf_apply_role" {
 }
 
 resource "aws_iam_role_policy" "tf_apply_policy" {
-  name = "apply-permits"
-  role = aws_iam_role.tf_apply_role.id
+  name   = "apply-permits"
+  role   = aws_iam_role.tf_apply_role.id
   policy = data.aws_iam_policy_document.tf_apply_policy.json
 }
 
 resource "aws_iam_role_policies_exclusive" "tf_apply_role_policies" {
-  role_name = aws_iam_role.tf_apply_role.name
+  role_name    = aws_iam_role.tf_apply_role.name
   policy_names = [aws_iam_role_policy.tf_apply_policy.name]
 }
 

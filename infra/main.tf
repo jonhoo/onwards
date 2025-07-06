@@ -10,19 +10,19 @@ terraform {
 }
 
 variable "aws_region" {
-  type = string
+  type        = string
   description = "AWS region to deploy into"
 }
 
 provider "aws" {
-  region              = var.aws_region
+  region = var.aws_region
 }
 
 # for ACM cert for CloudFront
 # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html#https-requirements-aws-region
 provider "aws" {
-  region              = "us-east-1"
-  alias               = "us-east-1"
+  region = "us-east-1"
+  alias  = "us-east-1"
 }
 
 data "aws_region" "current" {}

@@ -42,24 +42,24 @@ resource "aws_iam_role" "onwards" {
 }
 
 resource "aws_iam_role_policy" "xray" {
-  name = "xray"
-  role = aws_iam_role.onwards.id
+  name   = "xray"
+  role   = aws_iam_role.onwards.id
   policy = data.aws_iam_policy_document.xray.json
 }
 
 resource "aws_iam_role_policy" "cloudwatch" {
-  name = "cloudwatch"
-  role = aws_iam_role.onwards.id
+  name   = "cloudwatch"
+  role   = aws_iam_role.onwards.id
   policy = data.aws_iam_policy_document.cloudwatch.json
 }
 
 resource "aws_iam_role_policies_exclusive" "onwards_api_inline_policies" {
-  role_name = aws_iam_role.onwards.name
+  role_name    = aws_iam_role.onwards.name
   policy_names = [aws_iam_role_policy.xray.name, aws_iam_role_policy.cloudwatch.name]
 }
 
 resource "aws_iam_role_policy_attachments_exclusive" "onwards_api_attached_policies" {
-  role_name = aws_iam_role.onwards.name
+  role_name   = aws_iam_role.onwards.name
   policy_arns = ["arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"]
 }
 
