@@ -17,12 +17,6 @@ variable "github_repo" {
   description = "The GitHub project of this deployment of onwards"
 }
 
-variable "github_apply_branch" {
-  type        = string
-  default     = "main"
-  description = "The GitHub branch that is allowed to run apply"
-}
-
 # Data source used to grab the TLS certificate for Terraform Cloud.
 #
 # https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate
@@ -61,7 +55,7 @@ data "aws_iam_policy_document" "tf_plan_assume" {
     condition {
       test     = "StringLike"
       variable = "${var.github_idp}:sub"
-      values   = ["repo: *:ref:refs/heads/*"]
+      values   = ["repo:${var.github_repo}:*"]
     }
   }
 }
@@ -92,7 +86,8 @@ data "aws_iam_policy_document" "tf_apply_assume" {
     condition {
       test     = "StringEquals"
       variable = "${var.github_idp}:sub"
-      values   = ["repo: ${var.github_repo}:ref:refs/heads/${var.github_apply_branch}"]
+      values   = ["repo:${var.github_repo}:environment:prod"]
+
     }
   }
 }

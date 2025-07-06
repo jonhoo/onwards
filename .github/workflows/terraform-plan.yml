@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: terraform
 
 on:
   pull_request:
@@ -11,10 +11,10 @@ on:
       - ".github/workflows/terraform-plan.yml"
 
 jobs:
-  terraform-plan:
-    name: "Terraform Plan"
+  plan:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
       pull-requests: read
     steps:
