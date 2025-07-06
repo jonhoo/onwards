@@ -17,7 +17,11 @@ resource "aws_iam_role" "apigw_cw" {
   name                = "onwards-api-gw"
   description         = "Allows API Gateway to push logs to CloudWatch Logs."
   assume_role_policy  = data.aws_iam_policy_document.apigw_assume.json
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"]
+}
+
+resource "aws_iam_role_policy_attachments_exclusive" "apigw_cw_attach" {
+  role_name = aws_iam_role.apigw_cw.name
+  policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"]
 }
 
 resource "aws_api_gateway_account" "onwards" {

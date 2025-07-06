@@ -26,7 +26,7 @@ resource "aws_cloudfront_distribution" "onwards" {
   origin {
     origin_id = local.gw_origin_id
     # NOTE: this is stupid
-    domain_name = "${aws_apigatewayv2_api.onwards.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
+    domain_name = "${aws_apigatewayv2_api.onwards.id}.execute-api.${data.aws_region.current.region}.amazonaws.com"
 
     custom_origin_config {
       http_port              = 80

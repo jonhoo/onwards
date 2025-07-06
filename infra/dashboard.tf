@@ -16,7 +16,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "Count: Sum",
           "period" : 300,
@@ -37,7 +37,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "5XXError: Sum",
           "period" : 300,
@@ -58,7 +58,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "4XXError: Sum",
           "period" : 300,
@@ -79,7 +79,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "Latency: Average",
           "period" : 300,
@@ -100,7 +100,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "IntegrationLatency: Average",
           "period" : 300,
@@ -121,7 +121,7 @@ resource "aws_cloudwatch_dashboard" "onwards" {
           "legend" : {
             "position" : "bottom"
           },
-          "region" : data.aws_region.current.name,
+          "region" : data.aws_region.current.region,
           "liveData" : false,
           "title" : "DataProcessed: Sum",
           "period" : 300,

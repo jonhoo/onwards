@@ -61,12 +61,19 @@ data "aws_iam_policy_document" "tf_plan_assume" {
 resource "aws_iam_role" "tf_plan_role" {
   name               = "tf-plan-role"
   assume_role_policy = data.aws_iam_policy_document.tf_plan_assume.json
-
-  inline_policy {
-    name   = "planning-permits"
-    policy = data.aws_iam_policy_document.tf_plan_policy.json
-  }
 }
+
+resource "aws_iam_role_policy" "tf_plan_policy" {
+  name = "planning-permits"
+  role = aws_iam_role.tf_plan_role.id
+  policy = data.aws_iam_policy_document.tf_plan_policy.json
+}
+
+resource "aws_iam_role_policies_exclusive" "tf_plan_role_policies" {
+  role_name = aws_iam_role.tf_plan_role.name
+  policy_names = [aws_iam_role_policy.tf_plan_policy.name]
+}
+
 data "aws_iam_policy_document" "tf_apply_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -93,11 +100,17 @@ data "aws_iam_policy_document" "tf_apply_assume" {
 resource "aws_iam_role" "tf_apply_role" {
   name               = "tf-apply-role"
   assume_role_policy = data.aws_iam_policy_document.tf_apply_assume.json
+}
 
-  inline_policy {
-    name   = "apply-permits"
-    policy = data.aws_iam_policy_document.tf_apply_policy.json
-  }
+resource "aws_iam_role_policy" "tf_apply_policy" {
+  name = "apply-permits"
+  role = aws_iam_role.tf_apply_role.id
+  policy = data.aws_iam_policy_document.tf_apply_policy.json
+}
+
+resource "aws_iam_role_policies_exclusive" "tf_apply_role_policies" {
+  role_name = aws_iam_role.tf_apply_role.name
+  policy_names = [aws_iam_role_policy.tf_apply_policy.name]
 }
 
 # Creates a policy that will be used to define the permissions that
