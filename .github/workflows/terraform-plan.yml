@@ -43,9 +43,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Plan
+        working-directory: ./infra
         run: |
-          terraform -chrdir=infra init
-          terraform -chrdir=infra plan \
+          terraform init
+          terraform plan \
             -var 'domain=${{ vars.DOMAIN }}' \
             -var 'aws_region=${{ vars.AWS_REGION }}' \
             -var 'github_repo=$GITHUB_REPOSITORY' \

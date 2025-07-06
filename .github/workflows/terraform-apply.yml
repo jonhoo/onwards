@@ -50,9 +50,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Plan
+        working-directory: ./infra
         run: |
-          terraform -chrdir=infra init
-          terraform -chrdir=infra apply \
+          terraform init
+          terraform apply \
             -auto-approve \
             -var 'domain=${{ vars.DOMAIN }}' \
             -var 'aws_region=${{ vars.AWS_REGION }}' \
