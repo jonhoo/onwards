@@ -39,19 +39,30 @@ resource "aws_iam_role" "onwards" {
   name               = "onwards-api"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/service-role/"
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
-  ]
-  inline_policy {
-    name   = "xray"
-    policy = data.aws_iam_policy_document.xray.json
-  }
-  inline_policy {
-    name   = "cloudwatch"
-    policy = data.aws_iam_policy_document.cloudwatch.json
-  }
 }
+
+resource "aws_iam_role_policy" "xray" {
+  name   = "xray"
+  role   = aws_iam_role.onwards.id
+  policy = data.aws_iam_policy_document.xray.json
+}
+
+resource "aws_iam_role_policy" "cloudwatch" {
+  name   = "cloudwatch"
+  role   = aws_iam_role.onwards.id
+  policy = data.aws_iam_policy_document.cloudwatch.json
+}
+
+resource "aws_iam_role_policies_exclusive" "onwards_api_inline_policies" {
+  role_name    = aws_iam_role.onwards.name
+  policy_names = [aws_iam_role_policy.xray.name, aws_iam_role_policy.cloudwatch.name]
+}
+
+resource "aws_iam_role_policy_attachments_exclusive" "onwards_api_attached_policies" {
+  role_name   = aws_iam_role.onwards.name
+  policy_arns = ["arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"]
+}
+
 
 // To build for AWS Lambda runtime, run:
 // ```console
@@ -79,7 +90,7 @@ resource "aws_lambda_function" "onwards" {
   architectures = ["arm64"]
   timeout       = 30
   layers = [
-    "arn:aws:lambda:${data.aws_region.current.name}:580247275435:layer:LambdaInsightsExtension-Arm64:5"
+    "arn:aws:lambda:${data.aws_region.current.region}:580247275435:layer:LambdaInsightsExtension-Arm64:5"
   ]
 
   filename         = "lambda_function_payload.zip"

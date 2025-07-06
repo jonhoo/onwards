@@ -1,122 +1,123 @@
 # https://github.com/hashicorp/terraform-dynamic-credentials-setup-examples/tree/main/aws
 
-variable "tfc_aws_audience" {
+variable "idp_audience" {
   type        = string
-  default     = "aws.workload.identity"
+  default     = "sts.amazonaws.com"
   description = "The audience value to use in run identity tokens"
 }
 
-variable "tfc_hostname" {
+variable "github_idp" {
   type        = string
-  default     = "app.terraform.io"
-  description = "The hostname of the TFC or TFE instance you'd like to use with AWS"
+  default     = "token.actions.githubusercontent.com"
+  description = "The hostname of the GitHub identity provider you'd like to use with AWS"
 }
 
-variable "tfc_organization_name" {
+variable "github_repo" {
   type        = string
-  description = "The name of your Terraform Cloud organization"
-}
-
-variable "tfc_project_name" {
-  type        = string
-  default     = "Default Project"
-  description = "The project under which a workspace will be created"
-}
-
-variable "tfc_workspace_name" {
-  type        = string
-  default     = "onwards"
-  description = "The name of the workspace that you'd like to create and connect to AWS"
+  description = "The GitHub project of this deployment of onwards"
 }
 
 # Data source used to grab the TLS certificate for Terraform Cloud.
 #
 # https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate
-data "tls_certificate" "tfc_certificate" {
-  url = "https://${var.tfc_hostname}"
+data "tls_certificate" "gh_idp_certificate" {
+  url = "https://${var.github_idp}"
 }
 
-# Creates an OIDC provider which is restricted to
+# Creates an OIDC provider which is restricted to GitHub
 #
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider
-resource "aws_iam_openid_connect_provider" "tfc_provider" {
-  url             = data.tls_certificate.tfc_certificate.url
-  client_id_list  = [var.tfc_aws_audience]
-  thumbprint_list = [data.tls_certificate.tfc_certificate.certificates[0].sha1_fingerprint]
+resource "aws_iam_openid_connect_provider" "gh_provider" {
+  url             = data.tls_certificate.gh_idp_certificate.url
+  client_id_list  = [var.idp_audience]
+  thumbprint_list = [data.tls_certificate.gh_idp_certificate.certificates[0].sha1_fingerprint]
 }
 
-# Creates a role which can only be used by the specified Terraform
-# cloud workspace.
+# Creates a role which can only be used by the "prod" GitHub environment.
 #
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role
-data "aws_iam_policy_document" "tfc_plan_assume" {
+# https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#configuring-the-role-and-trust-policy
+data "aws_iam_policy_document" "tf_plan_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.tfc_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.gh_provider.arn]
     }
 
     condition {
       test     = "StringEquals"
-      variable = "${var.tfc_hostname}:aud"
-      values   = ["${one(aws_iam_openid_connect_provider.tfc_provider.client_id_list)}"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${var.tfc_hostname}:sub"
-      values   = ["organization:${var.tfc_organization_name}:project:${var.tfc_project_name}:workspace:${var.tfc_workspace_name}:run_phase:plan"]
-    }
-  }
-}
-resource "aws_iam_role" "tfc_plan" {
-  name               = "tfc-plan-role"
-  assume_role_policy = data.aws_iam_policy_document.tfc_plan_assume.json
-
-  inline_policy {
-    name   = "planning-permits"
-    policy = data.aws_iam_policy_document.tfc_plan_policy.json
-  }
-}
-data "aws_iam_policy_document" "tfc_apply_assume" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.tfc_provider.arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${var.tfc_hostname}:aud"
-      values   = ["${one(aws_iam_openid_connect_provider.tfc_provider.client_id_list)}"]
+      variable = "${var.github_idp}:aud"
+      values   = ["${one(aws_iam_openid_connect_provider.gh_provider.client_id_list)}"]
     }
 
     condition {
       test     = "StringLike"
-      variable = "${var.tfc_hostname}:sub"
-      values   = ["organization:${var.tfc_organization_name}:project:${var.tfc_project_name}:workspace:${var.tfc_workspace_name}:run_phase:*"]
+      variable = "${var.github_idp}:sub"
+      values   = ["repo:${var.github_repo}:*"]
     }
   }
 }
-resource "aws_iam_role" "tfc_apply" {
-  name               = "tfc-apply-role"
-  assume_role_policy = data.aws_iam_policy_document.tfc_apply_assume.json
+resource "aws_iam_role" "tf_plan_role" {
+  name               = "tf-plan-role"
+  assume_role_policy = data.aws_iam_policy_document.tf_plan_assume.json
+}
 
-  inline_policy {
-    name   = "apply-permits"
-    policy = data.aws_iam_policy_document.tfc_apply_policy.json
+resource "aws_iam_role_policy" "tf_plan_policy" {
+  name   = "planning-permits"
+  role   = aws_iam_role.tf_plan_role.id
+  policy = data.aws_iam_policy_document.tf_plan_policy.json
+}
+
+resource "aws_iam_role_policies_exclusive" "tf_plan_role_policies" {
+  role_name    = aws_iam_role.tf_plan_role.name
+  policy_names = [aws_iam_role_policy.tf_plan_policy.name]
+}
+
+data "aws_iam_policy_document" "tf_apply_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.gh_provider.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${var.github_idp}:aud"
+      values   = ["${one(aws_iam_openid_connect_provider.gh_provider.client_id_list)}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${var.github_idp}:sub"
+      values   = ["repo:${var.github_repo}:environment:prod"]
+
+    }
   }
+}
+resource "aws_iam_role" "tf_apply_role" {
+  name               = "tf-apply-role"
+  assume_role_policy = data.aws_iam_policy_document.tf_apply_assume.json
+}
+
+resource "aws_iam_role_policy" "tf_apply_policy" {
+  name   = "apply-permits"
+  role   = aws_iam_role.tf_apply_role.id
+  policy = data.aws_iam_policy_document.tf_apply_policy.json
+}
+
+resource "aws_iam_role_policies_exclusive" "tf_apply_role_policies" {
+  role_name    = aws_iam_role.tf_apply_role.name
+  policy_names = [aws_iam_role_policy.tf_apply_policy.name]
 }
 
 # Creates a policy that will be used to define the permissions that
 # the previously created role has within AWS.
 #
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy
-data "aws_iam_policy_document" "tfc_plan_policy" {
+data "aws_iam_policy_document" "tf_plan_policy" {
   statement {
     actions = [
       "acm:ListCertificates",
@@ -127,6 +128,7 @@ data "aws_iam_policy_document" "tfc_plan_policy" {
       "cloudfront:ListOriginAccessControls",
       "cloudwatch:ListDashboards",
       "logs:ListTagsLogGroup",
+      "logs:ListTagsForResource",
       "s3:ListAllMyBuckets",
       "sts:GetCallerIdentity",
     ]
@@ -188,22 +190,9 @@ data "aws_iam_policy_document" "tfc_plan_policy" {
     ]
   }
 }
-data "aws_iam_policy_document" "tfc_apply_policy" {
+data "aws_iam_policy_document" "tf_apply_policy" {
   statement {
     actions   = ["*"]
     resources = ["*"]
   }
-}
-
-# Runs in this workspace will be automatically authenticated
-# to AWS with the permissions set in the AWS policy.
-#
-# https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/workspace
-resource "tfe_workspace" "onwards" {
-  name         = var.tfc_workspace_name
-  organization = var.tfc_organization_name
-
-  file_triggers_enabled = false
-  queue_all_runs        = false
-  working_directory     = "infra"
 }

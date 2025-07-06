@@ -14,10 +14,14 @@ data "aws_iam_policy_document" "apigw_assume" {
 }
 
 resource "aws_iam_role" "apigw_cw" {
-  name                = "onwards-api-gw"
-  description         = "Allows API Gateway to push logs to CloudWatch Logs."
-  assume_role_policy  = data.aws_iam_policy_document.apigw_assume.json
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"]
+  name               = "onwards-api-gw"
+  description        = "Allows API Gateway to push logs to CloudWatch Logs."
+  assume_role_policy = data.aws_iam_policy_document.apigw_assume.json
+}
+
+resource "aws_iam_role_policy_attachments_exclusive" "apigw_cw_attach" {
+  role_name   = aws_iam_role.apigw_cw.name
+  policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"]
 }
 
 resource "aws_api_gateway_account" "onwards" {
@@ -48,7 +52,7 @@ resource "aws_apigatewayv2_stage" "onwards" {
     # uncached!) shortlinks that can be resolved per second. given that
     # shortlinks are cached for 24h, it would be unreasonable for this to be
     # much more than 10.
-    throttling_rate_limit  = 20
+    throttling_rate_limit = 20
   }
 }
 

@@ -1,5 +1,5 @@
 locals {
-  logs = "onwards-${data.aws_region.current.name}-logs"
+  logs = "onwards-${data.aws_region.current.region}-logs"
 }
 
 resource "aws_s3_bucket" "logs" {
