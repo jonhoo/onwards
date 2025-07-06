@@ -128,6 +128,7 @@ data "aws_iam_policy_document" "tf_plan_policy" {
       "cloudfront:ListOriginAccessControls",
       "cloudwatch:ListDashboards",
       "logs:ListTagsLogGroup",
+      "logs:ListTagsForResource",
       "s3:ListAllMyBuckets",
       "sts:GetCallerIdentity",
     ]
