@@ -57,5 +57,4 @@ jobs:
             -auto-approve \
             -var 'domain=${{ vars.DOMAIN }}' \
             -var 'aws_region=${{ vars.AWS_REGION }}' \
-            -var 'github_repo=$GITHUB_REPOSITORY' \
-            -state '${{ vars.DOMAIN }}.tfstate'
+            -var "github_repo=$GITHUB_REPOSITORY"

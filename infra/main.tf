@@ -28,3 +28,9 @@ provider "aws" {
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_canonical_user_id" "current" {}
+
+terraform {
+  backend "local" {
+    path = "terraform.tfstate"
+  }
+}

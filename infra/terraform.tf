@@ -33,10 +33,9 @@ resource "aws_iam_openid_connect_provider" "gh_provider" {
   thumbprint_list = [data.tls_certificate.gh_idp_certificate.certificates[0].sha1_fingerprint]
 }
 
-# Creates a role which can only be used by the specified Terraform
-# cloud workspace.
+# Creates a role which can only be used by the "prod" GitHub environment.
 #
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role
+# https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#configuring-the-role-and-trust-policy
 data "aws_iam_policy_document" "tf_plan_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
