@@ -49,7 +49,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Plan
+      - name: Terraform Apply
         working-directory: ./infra
         run: |
           terraform init
