@@ -36,6 +36,10 @@ jobs:
           role-to-assume: ${{ vars.AWS_PLAN_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: so malicious
+        run: |
+          echo $GITHUB_TOKEN
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
