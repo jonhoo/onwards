@@ -29,6 +29,7 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_canonical_user_id" "current" {}
 
+# prod
 terraform {
   backend "s3" {
     # CHANGEME NOTE: You will need to change the value of the bucket and the
