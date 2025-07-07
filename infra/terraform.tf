@@ -69,9 +69,18 @@ resource "aws_iam_role_policy" "tf_plan_policy" {
   policy = data.aws_iam_policy_document.tf_plan_policy.json
 }
 
+# pick out the lambda since it changes every time and makes the plan output
+# diff look huge since the entire policy looks like it changes when the lambda
+# changes.
+resource "aws_iam_role_policy" "tf_plan_lambda_policy" {
+  name   = "planning-permits-for-lambda"
+  role   = aws_iam_role.tf_plan_role.id
+  policy = data.aws_iam_policy_document.tf_plan_lambda_policy.json
+}
+
 resource "aws_iam_role_policies_exclusive" "tf_plan_role_policies" {
   role_name    = aws_iam_role.tf_plan_role.name
-  policy_names = [aws_iam_role_policy.tf_plan_policy.name]
+  policy_names = [aws_iam_role_policy.tf_plan_policy.name, aws_iam_role_policy.tf_plan_lambda_policy.name]
 }
 
 data "aws_iam_policy_document" "tf_apply_assume" {
@@ -179,15 +188,17 @@ data "aws_iam_policy_document" "tf_plan_policy" {
     resources = ["*"]
   }
   statement {
-    actions   = ["lambda:GetFunctionCodeSigningConfig", "lambda:ListVersionsByFunction", "lambda:GetFunction", "lambda:GetPolicy"]
-    resources = [aws_lambda_function.onwards.arn]
-  }
-  statement {
     actions = ["s3:Get*", "s3:ListBucket"]
     resources = [
       aws_s3_bucket.logs.arn,
       "${aws_s3_bucket.logs.arn}/*",
     ]
+  }
+}
+data "aws_iam_policy_document" "tf_plan_lambda_policy" {
+  statement {
+    actions   = ["lambda:GetFunctionCodeSigningConfig", "lambda:ListVersionsByFunction", "lambda:GetFunction", "lambda:GetPolicy"]
+    resources = [aws_lambda_function.onwards.arn]
   }
 }
 data "aws_iam_policy_document" "tf_apply_policy" {
