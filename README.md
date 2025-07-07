@@ -70,16 +70,27 @@ Here's what you do:
    ```console
    env AWS_PROFILE=onwards aws account get-account-information
    ```
-1. We'll also need to build the main binary so it can be uploaded to
-   AWS. To do so, [install
+1. We also need to manually set up the S3 bucket that Terraform's state
+   will be kept in. Luckily, we only have to do so once. You can do that
+   by running the following commands, substituting in `$DOMAIN` and
+   `$AWS_REGION`:
+   ```console
+   env AWS_PROFILE=onwards aws s3api create-bucket --bucket onwards.$DOMAIN.terraform --region $AWS_REGION --create-bucket-configuration LocationConstraint=$AWS_REGION
+   env AWS_PROFILE=onwards aws s3api put-bucket-versioning --bucket onwards.$DOMAIN.terraform --versioning-configuration Status=Enabled
+   ```
+   Once that's done, open `infra/main.tf` and look for the `CHANGEME
+   NOTE`. Update the bucket name and region there to match what you gave
+   in the command above.
+1. Now, we must build the main binary so it can be uploaded to AWS. To
+   do so, [install
    cargo-lambda](https://www.cargo-lambda.info/guide/getting-started.html),
    and then in your checkout of onwards, run
    ```console
    cargo lambda build --release --arm64
    ```
-1. Next, `cd infra/` and run:
+1. Finally, we're ready to set up all the infrastructure! `cd infra/`
+   and run:
    ```console
-   rm terraform.tfstate
    terraform init
    terraform apply
    ```
@@ -97,10 +108,10 @@ Here's what you do:
    domains listed under "Name servers" and make them be the name servers
    set for your domain with your domain registrar. Do that now.
    Eventually, the Terraform apply should finally finish successfully.
-1. Do a git commit (only `infra/terraform.tfstate` should have changed),
-   and push! You should be able to go to GitHub and see the
-   terraform/apply step succeed with only marginal changes (like the
-   hash of the lambda binary changing since it's now built on CI).
+1. Commit your change to `infra/main.tf` and push! You should be able to
+   go to GitHub and see the terraform/apply step succeed with only
+   marginal changes (like the hash of the lambda binary changing since
+   it's now built on CI).
 1. Open `$yourdomain/about` and see that it redirects to the onwards
    GitHub project. Congratulations -- setup is now done! Let's check
    that adding some links works.

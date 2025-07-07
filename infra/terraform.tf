@@ -192,6 +192,8 @@ data "aws_iam_policy_document" "tf_plan_policy" {
     resources = [
       aws_s3_bucket.logs.arn,
       "${aws_s3_bucket.logs.arn}/*",
+      "onwards.${var.domain}.terraform",
+      "onwards.${var.domain}.terraform/*",
     ]
   }
 }

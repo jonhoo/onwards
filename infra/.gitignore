@@ -1,3 +1,4 @@
 .terraform/
 terraform.tfstate.*backup
+terraform.tfstate
 lambda_function_payload.zip
