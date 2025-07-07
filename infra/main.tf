@@ -30,7 +30,13 @@ data "aws_caller_identity" "current" {}
 data "aws_canonical_user_id" "current" {}
 
 terraform {
-  backend "local" {
-    path = "terraform.tfstate"
+  backend "s3" {
+    # CHANGEME NOTE: You will need to change the value of the bucket and the
+    # region below to reflect your own domain and preferred region! This should
+    # be the only diff you have to the infrastructure files compared to
+    # jonhoo/onwards.
+    bucket = "onwards.r4r.fyi.terraform"
+    region = "eu-north-1"
+    key    = "prod/terraform.tfstate"
   }
 }
