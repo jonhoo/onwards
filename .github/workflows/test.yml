@@ -82,7 +82,7 @@ jobs:
           grep -F "Location: https://github.com/jonhoo/onwards" <<< "$http"
       - name: measure invocation time
         run: |
-          curl -w @- -o /dev/null -s http://localhost:3000/root <<'EOF
+          curl -w @- -o /dev/null -s http://localhost:3000/root <<'EOF'
               time_namelookup:  %{time_namelookup}\n
                  time_connect:  %{time_connect}\n
               time_appconnect:  %{time_appconnect}\n
