@@ -8,22 +8,22 @@ use axum::{
     Router,
 };
 use http::{header::CACHE_CONTROL, StatusCode};
-use std::{collections::HashMap, sync::LazyLock};
+use phf::phf_map;
 use tower_http::limit::RequestBodyLimitLayer;
 
-static FORWARDS: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
-    HashMap::from([
-        // This is where you add shortlinks!
-        //
-        // Note that "root" is special -- it is also where / will redirect.
-        ("root", "https://rust-for-rustaceans.com"),
-        // All your other shortlinks go here:
-        //
-        // Please preserve these bottom two for attribution :)
-        ("about", "https://github.com/jonhoo/onwards"),
-        ("humans.txt", "https://thesquareplanet.com"),
-    ])
-});
+static FORWARDS: phf::Map<&'static str, &'static str> = phf_map! {
+    // This is where you add shortlinks!
+    //
+    // Note that "root" is special -- it is also where / will redirect.
+    "root" => "https://rust-for-rustaceans.com",
+
+    // All your other shortlinks go here:
+    "youtube" => "https://www.youtube.com/@jonhoo",
+
+    // Please preserve these two for attribution :)
+    "about" => "https://github.com/jonhoo/onwards",
+    "humans.txt" => "https://thesquareplanet.com",
+};
 
 pub async fn new() -> Router {
     Router::new()
