@@ -8,22 +8,26 @@ use axum::{
     Router,
 };
 use http::{header::CACHE_CONTROL, StatusCode};
-use phf::phf_map;
 use tower_http::limit::RequestBodyLimitLayer;
 
-static FORWARDS: phf::Map<&'static str, &'static str> = phf_map! {
-    // This is where you add shortlinks!
-    //
-    // Note that "root" is special -- it is also where / will redirect.
-    "root" => "https://rust-for-rustaceans.com",
+fn forwards_to(short: &str) -> Option<&'static str> {
+    Some(match short {
+        // This is where you add shortlinks!
+        //
+        // Note that "root" is special -- it is also where / will redirect.
+        "root" => "https://rust-for-rustaceans.com",
 
-    // All your other shortlinks go here:
-    "youtube" => "https://www.youtube.com/@jonhoo",
+        // All your other shortlinks go here:
+        "youtube" => "https://www.youtube.com/@jonhoo",
 
-    // Please preserve these two for attribution :)
-    "about" => "https://github.com/jonhoo/onwards",
-    "humans.txt" => "https://thesquareplanet.com",
-};
+        // Please preserve these two for attribution :)
+        "about" => "https://github.com/jonhoo/onwards",
+        "humans.txt" => "https://thesquareplanet.com",
+
+        // Anything else is a 404
+        _ => return None,
+    })
+}
 
 pub async fn new() -> Router {
     Router::new()
@@ -33,11 +37,11 @@ pub async fn new() -> Router {
 }
 
 async fn root() -> Redirect {
-    Redirect::permanent(FORWARDS["root"])
+    Redirect::permanent(forwards_to("root").expect("root is always set"))
 }
 
 async fn forward(Path(short): Path<String>) -> Result<impl IntoResponse, StatusCode> {
-    let Some(target) = FORWARDS.get(&*short) else {
+    let Some(target) = forwards_to(&short) else {
         return Err(StatusCode::NOT_FOUND);
     };
 
