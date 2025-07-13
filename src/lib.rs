@@ -20,6 +20,18 @@ fn forwards_to(short: &str) -> Option<&'static str> {
         // All your other shortlinks go here:
         "youtube" => "https://www.youtube.com/@jonhoo",
 
+        // Chapter 1 (foundations)
+        "places" => "https://www.ralfj.de/blog/2024/08/14/places.html",
+        "tmp-scopes" => {
+            "https://doc.rust-lang.org/nightly/reference/destructors.html#temporary-scopes"
+        }
+
+        // Chapter 3 (designing interfaces)
+        "dyn-compat" => "https://internals.rust-lang.org/t/object-safety-is-a-terrible-term/21025",
+
+        // Chapter 9 (unsafe)
+        "const-mut" => "https://github.com/rust-lang/unsafe-code-guidelines/issues/257",
+
         // Please preserve these two for attribution :)
         "about" => "https://github.com/jonhoo/onwards",
         "humans.txt" => "https://thesquareplanet.com",
