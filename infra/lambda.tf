@@ -63,43 +63,65 @@ resource "aws_iam_role_policy_attachments_exclusive" "onwards_api_attached_polic
   policy_arns = ["arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"]
 }
 
-
-// To build for AWS Lambda runtime, run:
-// ```console
-// $ cargo lambda build --release --arm64
-// ```
-// The artifact will be located in <project_root>/target/lambda/lambda/bootstrap,
-check "lambda-built" {
-  assert {
-    condition     = fileexists("${path.module}/../target/lambda/lambda/bootstrap")
-    error_message = "Run `cargo lambda build --release --arm64`"
+data "aws_iam_policy_document" "ecr" {
+  statement {
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:ListImages"
+    ]
+    resources = ["*"]
   }
 }
 
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_file = "${path.module}/../target/lambda/lambda/bootstrap"
-  output_path = "lambda_function_payload.zip"
+resource "aws_iam_role_policy" "onwards-ecr" {
+  name   = "ecr"
+  role   = aws_iam_role.onwards.id
+  policy = data.aws_iam_policy_document.ecr.json
+}
+
+resource "aws_ecr_repository" "onwards" {
+  name                 = "onwards"
+  image_tag_mutability = "IMMUTABLE"
+  encryption_configuration {
+    encryption_type = "KMS"
+  }
+}
+
+data "aws_ecr_lifecycle_policy_document" "onwards" {
+  rule {
+    priority    = 1
+    description = "Keep last 5 images"
+
+    selection {
+      tag_status      = "any"
+      count_type      = "imageCountMoreThan"
+      count_number    = 5
+    }
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "name" {
+  repository = aws_ecr_repository.onwards.name
+  policy = data.aws_ecr_lifecycle_policy_document.onwards.json
+}
+
+variable "lambda_image_tag" {
+  type        = string
+  description = "The ECR image tag for the lambda's container image"
 }
 
 resource "aws_lambda_function" "onwards" {
   function_name = "onwards-api"
   role          = aws_iam_role.onwards.arn
-  handler       = "bootstrap"
-  runtime       = "provided.al2023"
   architectures = ["arm64"]
+  package_type  = "Image"
+  image_uri     = "${aws_ecr_repository.onwards.repository_url}:${var.lambda_image_tag}"
   timeout       = 30
-  layers = [
-    "arn:aws:lambda:${data.aws_region.current.region}:580247275435:layer:LambdaInsightsExtension-Arm64:5"
-  ]
 
-  filename         = "lambda_function_payload.zip"
-  source_code_hash = data.archive_file.lambda.output_base64sha256
-
-  environment {
-    variables = {
-      RUST_LOG = "info,tower_http=debug,onwards_api=trace"
-    }
+  image_config {
+    entry_point = ["/lambda-entrypoint.sh"]
+    command     = ["app.handler"]
   }
 
   depends_on = [

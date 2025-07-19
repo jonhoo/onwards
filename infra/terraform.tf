@@ -140,6 +140,9 @@ data "aws_iam_policy_document" "tf_plan_policy" {
       "logs:ListTagsForResource",
       "s3:ListAllMyBuckets",
       "sts:GetCallerIdentity",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:ListImages"
     ]
     resources = ["*"]
   }

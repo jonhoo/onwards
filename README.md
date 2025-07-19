@@ -81,18 +81,17 @@ Here's what you do:
    Once that's done, open `infra/main.tf` and look for the `CHANGEME
    NOTE`. Update the bucket name and region there to match what you gave
    in the command above.
-1. Now, we must build the main binary so it can be uploaded to AWS. To
-   do so, [install
-   cargo-lambda](https://www.cargo-lambda.info/guide/getting-started.html),
-   and then in your checkout of onwards, run
-   ```console
-   cargo lambda build --release --arm64
-   ```
-1. Finally, we're ready to set up all the infrastructure! `cd infra/`
+1. We're almost done now. Unfortunately, there's one complication: the
+   GitHub actions apply job tries to publish the Docker image for the
+   Lambda function to AWS ECR (the Docker registry). This will fail
+   because we haven't run Terraform yet to create it. But, we can't run
+   Terraform until we have an image tag for the Lambda function, because
+   otherwise Terraform's creation of the Lambda will fail. So, we have
+   to tell terraform locally to initiate _only_ ECR for now. `cd infra/`
    and run:
    ```console
    terraform init
-   terraform apply
+   terraform apply -target=aws_ecr_repository.onwards -var "lambda_image_tag=latest"
    ```
    It will prompt you for three values:
    - `aws_region` and `domain`, which you should provide the same value
@@ -100,18 +99,26 @@ Here's what you do:
    - `github_repo`, which you should set to the GitHub repository of
      your fork (e.g., `jonhoo/onwards`).
    After the "Plan" step finishes, you'll have to confirm that you want
-   to apply the changes (type "yes" and hit enter). The TLS certificate
-   creation step will hang until we finish domain setup, so leave the
-   hanging apply open while we set up the name servers:
+   to apply the changes (type "yes" and hit enter). This step _should_
+   the complete successfully!
+1. Now we just need to ensure that GitHub can actually modify all our
+   various AWS state. We do that by another targeted apply that just
+   instantiates the required IAM policy:
+   ```console
+   terraform apply -target=aws_iam_role_policies_exclusive.tf_apply_role_policies -var "lambda_image_tag=latest"
+   ```
+   It will ask you again for the same variables as above.
+1. Commit your change to `infra/main.tf` and push! You should be able to
+   go to GitHub and see the terraform/apply step run. The first time it
+   runs, it will make a _lot_ of changes -- that's fine. However, you'll
+   see the TLS certificate creation hang. This is expected until we finish domain setup,
+   so leave the hanging apply open while we set up the name servers:
 1. In the AWS console, go to Route 53 -> Hosted zones, open your domain,
    expand the "Hosted zone details" box. You'll want to take all the
    domains listed under "Name servers" and make them be the name servers
    set for your domain with your domain registrar. Do that now.
-   Eventually, the Terraform apply should finally finish successfully.
-1. Commit your change to `infra/main.tf` and push! You should be able to
-   go to GitHub and see the terraform/apply step succeed with only
-   marginal changes (like the hash of the lambda binary changing since
-   it's now built on CI).
+   Eventually, the terraform/apply GitHub action step should finally
+   finish successfully. If it timed out, just restart it.
 1. Open `$yourdomain/about` and see that it redirects to the onwards
    GitHub project. Congratulations -- setup is now done! Let's check
    that adding some links works.
