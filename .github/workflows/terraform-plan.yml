@@ -19,17 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # we do not run the actual build, since a user could then inject a
-      # malicious build.rs to leak our GITHUB_TOKEN. Instead, we just touch a
-      # file in the right place that terraform plan will then use as "the
-      # lambda binary". This is fine since plan doesn't actually apply
-      # anything. See also
-      # https://github.com/jonhoo/onwards/pull/7#issuecomment-3046317254
-      - name: fake cargo lambda build
-        run: |
-          mkdir -p target/lambda/lambda
-          touch target/lambda/lambda/bootstrap
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -46,4 +35,5 @@ jobs:
           terraform plan \
             -var 'domain=${{ vars.DOMAIN }}' \
             -var 'aws_region=${{ vars.AWS_REGION }}' \
-            -var "github_repo=$GITHUB_REPOSITORY"
+            -var "github_repo=$GITHUB_REPOSITORY" \
+            -var "lambda_image_tag=latest"
