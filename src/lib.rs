@@ -26,6 +26,9 @@ fn forwards_to(short: &str) -> Option<&'static str> {
             "https://doc.rust-lang.org/nightly/reference/destructors.html#temporary-scopes"
         }
 
+        // Chapter 2 (types)
+        "captures" => "https://blog.rust-lang.org/2024/09/05/impl-trait-capture-rules/",
+
         // Chapter 3 (designing interfaces)
         "dyn-compat" => "https://internals.rust-lang.org/t/object-safety-is-a-terrible-term/21025",
 
