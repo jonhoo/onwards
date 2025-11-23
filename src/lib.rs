@@ -39,6 +39,9 @@ fn forwards_to(short: &str) -> Option<&'static str> {
         "try" => "https://github.com/rust-lang/rust/issues/84277",
         "try-blocks" => "https://github.com/rust-lang/rust/issues/31436",
 
+        // Chapter 6 (testing)
+        "insta" => "https://insta.rs/",
+
         // Chapter 9 (unsafe)
         "const-mut" => "https://github.com/rust-lang/unsafe-code-guidelines/issues/257",
 
