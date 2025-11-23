@@ -32,6 +32,13 @@ fn forwards_to(short: &str) -> Option<&'static str> {
         // Chapter 3 (designing interfaces)
         "dyn-compat" => "https://internals.rust-lang.org/t/object-safety-is-a-terrible-term/21025",
 
+        // Chapter 4 (error handling)
+        "downcast-risk" => "https://github.com/rust-lang/rfcs/pull/2895#discussion_r1894674526",
+        "rfc2895" => "https://github.com/rust-lang/rfcs/pull/2895",
+        "cf-unwrap" => "https://blog.cloudflare.com/18-november-2025-outage/#memory-preallocation",
+        "try" => "https://github.com/rust-lang/rust/issues/84277",
+        "try-blocks" => "https://github.com/rust-lang/rust/issues/31436",
+
         // Chapter 9 (unsafe)
         "const-mut" => "https://github.com/rust-lang/unsafe-code-guidelines/issues/257",
 
