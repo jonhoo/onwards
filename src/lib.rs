@@ -31,6 +31,9 @@ fn forwards_to(short: &str) -> Option<&'static str> {
 
         // Chapter 3 (designing interfaces)
         "dyn-compat" => "https://internals.rust-lang.org/t/object-safety-is-a-terrible-term/21025",
+        "rfc1105" => "https://rust-lang.github.io/rfcs/1105-api-evolution.html",
+        "semver" => "https://doc.rust-lang.org/cargo/reference/semver.html",
+        "semver-check" => "https://github.com/obi1kenobi/cargo-semver-checks",
 
         // Chapter 4 (error handling)
         "downcast-risk" => "https://github.com/rust-lang/rfcs/pull/2895#discussion_r1894674526",
