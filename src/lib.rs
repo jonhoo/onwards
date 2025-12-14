@@ -40,7 +40,7 @@ fn forwards_to(short: &str) -> Option<&'static str> {
         "try-blocks" => "https://github.com/rust-lang/rust/issues/31436",
 
         // Chapter 6 (testing)
-        "insta" => "https://insta.rs/",
+        "test-builder" => "https://jmmv.dev/2020/12/builder-pattern-for-tests.html",
 
         // Chapter 9 (unsafe)
         "const-mut" => "https://github.com/rust-lang/unsafe-code-guidelines/issues/257",
