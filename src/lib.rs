@@ -48,6 +48,9 @@ fn forwards_to(short: &str) -> Option<&'static str> {
         // Chapter 9 (unsafe)
         "const-mut" => "https://github.com/rust-lang/unsafe-code-guidelines/issues/257",
 
+        // Chapter 12 (no-std)
+        "std-prelude" => "https://www.reddit.com/r/rust/comments/1hs6spy/psa_for_std_feature_in_no_std_libraries/",
+
         // Please preserve these two for attribution :)
         "about" => "https://github.com/jonhoo/onwards",
         "humans.txt" => "https://thesquareplanet.com",
