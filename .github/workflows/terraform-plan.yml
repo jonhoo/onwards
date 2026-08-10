@@ -26,7 +26,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       - name: Terraform Plan
         working-directory: ./infra
